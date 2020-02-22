@@ -7,34 +7,45 @@ int strcmp_spcf(const char *str1, const char *str2);
 
 int strcmp_spcf(const char *str1, const char *str2)
 {
-	char *c1, *c2;
-	int qst;
+	char *c1, *c2, *c_srch;
+	int mltp;
 
 	c1 = (char *)str1;
 	c2 = (char *)str2;
-	if( *c2=='\\' && ( *(c2 + 1)=='?' || *(c2 + 1)=='\\' ) )
-		c2++;
-	if( *c2 && *c2!= '\n' && *(c2 + 1)=='?' )
-		qst = 1;
+	if( *c2 && *c2!= '\n' && *(c2 + 1)=='*' )
+		mltp = 1;
 	else
-		qst = 0;
+		mltp = 0;
 	while( *c1 && *c1!='\n' && *c2 && *c2!='\n' )
 	{
-		if( qst )
+		if( mltp )
 		{
 			if( !strcmp_spcf(c1, c2 + 2) )
 				return 0;
-			if( *c1==*c2 )
-			{
-				c1++;
-				c2 += 2;
-				if( *c2 && *c2!= '\n' && *(c2 + 1)=='?' )
-					qst = 1;
-				else
-					qst = 0;
 
-				continue;
+			if( *c1!=*c2 )
+				return 1;
+
+			c_srch = c2;
+			c2 += 2;
+			while( *c_srch==*c2 )
+			{
+				c2++;
+				while( *c2=='*' )
+					c2++;
 			}
+
+			while( *c_srch==*c1 )
+				c1++;
+
+			if( *c2=='\\' && ( *(c2 + 1)=='*' || *(c2 + 1)=='\\' ) )
+				c2++;
+			if( *c2 && *c2!='\n' && *(c2 + 1)=='*' )
+				mltp = 1;
+			else
+				mltp = 0;
+
+			continue;
 		}
 
 		if( *c1!=*c2 )
@@ -43,19 +54,19 @@ int strcmp_spcf(const char *str1, const char *str2)
 		c1++;
 		c2++;
 
-		if( *c2=='\\' && ( *(c2 + 1)=='?' || *(c2 + 1)=='\\' ) )
+		if( *c2=='\\' && ( *(c2 + 1)=='*' || *(c2 + 1)=='\\' ) )
 			c2++;
-		if( *c2 && *c2!='\n' &&*(c2 + 1)=='?' )
-			qst = 1;
+		if( *c2 && *c2!='\n' && *(c2 + 1)=='*' )
+			mltp = 1;
 	}
 
 	if( (!*c1 || *c1=='\n') && *c2 && *c2!='\n' )
 	{
-		while( qst )
+		while( mltp )
 		{
 			c2 += 2;
-			if( !*c2 || *c2=='\n' || *(c2 + 1)!='?' )
-				qst = 0;
+			if( !*c2 || *c2=='\n' || *(c2 + 1)!='*' )
+				mltp = 0;
 		}
 
 		if( *c2 && *c2!='\n' )
@@ -69,8 +80,8 @@ int strcmp_spcf(const char *str1, const char *str2)
 }
 
 /* Ф-ия выводит в name_out строки из name_in, совпадающие со строкой s.
- * Последовательностям "\?" и "\\" в s соответствуют '?' и '\'.
- * Символ '?' в s означает, что предыдущий символ может учитываться не более одного раза.
+ * Последовательностям "\*" и "\\" в s соответствуют '*' и '\'.
+ * Символ '*' в s означает, что предыдущий символ может учитываться нуль или более раз.
  * Ф-ия возвращает:
  * ERROR_OPEN_IN, если не удалось открыть name_in;
  * ERROR_OPEN_OUT, если не удалось открыть name_out;

@@ -7,14 +7,14 @@ int main(int argc, char **argv)
 	int res;
 	clock_t t_begin;
 
-	if( argc<4 )
+	if( argc<5 )
 	{
-		fprintf(stderr, "Usage: %s a b s\n", argv[0]);
+		fprintf(stderr, "Usage: %s a b s t\n", argv[0]);
 		return 1;
 	}
 
 	t_begin = clock();
-	res = fun(argv[1], argv[2], argv[3]);
+	res = fun(argv[1], argv[2], argv[3], argv[4]);
 	printf("Time: %.2lf\n", (double)(clock() - t_begin)/CLOCKS_PER_SEC);
 	if( res<0 )
 	{
