@@ -12,6 +12,8 @@ int strcmp_spcf(const char *str1, const char *str2)
 
 	c1 = (char *)str1;
 	c2 = (char *)str2;
+	if( *c2=='\\' && ( *(c2 + 1)=='*' || *(c2 + 1)=='\\' ) )
+			c2++;
 	if( *c2 && *c2!= '\n' && *(c2 + 1)=='*' )
 		mltp = 1;
 	else
